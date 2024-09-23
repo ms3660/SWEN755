@@ -66,3 +66,8 @@ This system is a basic example of monitoring and fault detection using heartbeat
 
 ## Frameworks and Libraries
 - **Java Standard Edition (Java SE)**: Core libraries for random number generation, network communication (UDP), and exception handling.
+
+## GitHub Repository
+
+- **Repository URL**: SWEN755 on GitHub
+- **Clone via HTTPS**: https://github.com/ms3660/SWEN755.git
