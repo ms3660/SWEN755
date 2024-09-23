@@ -1,3 +1,8 @@
+# SWEN755
+Course: SWEN.755.01 - Software Architecture (SWEN75501.2241) Instructor: Viktoria Koscinski
+
+# Assignment 1: Heartbeat Implementation
+
 # Weather Monitoring System
 This project is a part of the SWEN755 homework assignment. It simulates a weather monitoring system with fault detection using a heartbeat mechanism.
 
