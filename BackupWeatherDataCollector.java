@@ -1,10 +1,13 @@
 import java.io.*;
 import java.net.*;
+import java.util.Random;
+import java.util.concurrent.*;
 
 public class BackupWeatherDataCollector {
-    private boolean isCollecting = false;
+    private volatile boolean isCollecting = false;
     private static final String CHECKPOINT_FILE = "weather_checkpoint.ser";
-    private static final int MONITOR_PORT = 9877; // Port for communication with HeartbeatMonitor
+    private static final int MONITOR_PORT = 9877;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public void start() {
         System.out.println("Backup collector standing by...");
@@ -12,28 +15,30 @@ public class BackupWeatherDataCollector {
         waitForTakeoverSignal();
     }
 
-    private void sendHeartbeats() {
-        Thread heartbeatThread = new Thread(() -> {
-            while (!isCollecting) {
-                try {
-                    Thread.sleep(1000);
-                    HeartbeatSender.sendHeartbeat("BACKUP");
-                } catch (InterruptedException e) {
-                    System.err.println("Backup collector heartbeat interrupted: " + e.getMessage());
-                }
+  private void sendHeartbeats() {
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                String heartbeatType = isCollecting ? "BACKUP_ACTIVE" : "BACKUP_STANDBY";
+                HeartbeatSender.sendHeartbeat(heartbeatType);
+            } catch (Exception e) {
+                System.err.println("Error sending heartbeat: " + e.getMessage());
             }
-        });
-        heartbeatThread.start();
+        }, 0, 1, TimeUnit.SECONDS);
     }
-
     private void waitForTakeoverSignal() {
         try (ServerSocket serverSocket = new ServerSocket(MONITOR_PORT)) {
             System.out.println("Waiting for takeover signal on port " + MONITOR_PORT);
-            Socket socket = serverSocket.accept();
-            System.out.println("Received takeover signal. Taking over...");
-            takeOver();
+            while (true) {
+                try (Socket socket = serverSocket.accept()) {
+                    System.out.println("Received takeover signal. Taking over...");
+                    takeOver();
+                    break;
+                } catch (IOException e) {
+                    System.err.println("Error accepting takeover signal: " + e.getMessage());
+                }
+            }
         } catch (IOException e) {
-            System.err.println("Error waiting for takeover signal: " + e.getMessage());
+            System.err.println("Error setting up takeover signal listener: " + e.getMessage());
         }
     }
 
@@ -48,8 +53,6 @@ public class BackupWeatherDataCollector {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CHECKPOINT_FILE))) {
             WeatherDataCollector checkpoint = (WeatherDataCollector) in.readObject();
             System.out.println("Loaded checkpoint: " + checkpoint);
-            // Use the checkpoint data to initialize the backup collector's state
-            // You might need to add fields to store the checkpoint data
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error loading checkpoint: " + e.getMessage());
         }
@@ -57,14 +60,15 @@ public class BackupWeatherDataCollector {
 
     public void collectData() {
         System.out.println("Backup collector started collecting data...");
-        while (true) {
+        Random random = new Random();
+        while (isCollecting) {
             try {
-                Thread.sleep(1000); // Simulate time to collect data
-                double temperature = 20 + Math.random() * 15; // Generate a random temperature value
-                double humidity = 30 + Math.random() * 40; // Generate a random humidity value
-                System.out.println("Backup Weather Data: Temperature = " + 
-                                   String.format("%.2f", temperature) + "°C, Humidity = " + 
-                                   String.format("%.2f", humidity) + "%");
+                Thread.sleep(1000);
+                double temperature = 20 + random.nextDouble() * 15;
+                double humidity = 30 + random.nextDouble() * 40;
+                System.out.println("Backup Weather Data: Temperature = " +
+                        String.format("%.2f", temperature) + "°C, Humidity = " +
+                        String.format("%.2f", humidity) + "%");
             } catch (InterruptedException e) {
                 System.err.println("Data collection interrupted: " + e.getMessage());
             }
