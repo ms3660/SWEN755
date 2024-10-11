@@ -19,17 +19,14 @@ public class HeartbeatMonitor {
 
             // Monitor loop
             while (true) {
-                // Set a timeout for waiting on receiving heartbeats
                 socket.setSoTimeout(TIMEOUT);
                 try {
                     // Waiting for heartbeat
-                    System.out.println("Waiting for heartbeat...");
                     socket.receive(packet);
                     String message = new String(packet.getData(), 0, packet.getLength());
                     processHeartbeat(message);
                 } catch (IOException e) {
                     // Timeout has occurred (no heartbeat received within TIMEOUT)
-                    System.err.println("No heartbeat received within the timeout period.");
                     handleMissingHeartbeat();
                 }
 
