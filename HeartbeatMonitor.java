@@ -1,11 +1,11 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.io.*;
+import java.net.*;
 
 public class HeartbeatMonitor {
     private static final int PORT = 9876;
     private static final int TIMEOUT = 5000; // 5 seconds
     private static boolean primaryActive = true;
+    private static final String ACTIVATION_FLAG = "activate_backup";
 
     public static void main(String[] args) {
         try (DatagramSocket socket = new DatagramSocket(PORT)) {
@@ -52,10 +52,16 @@ public class HeartbeatMonitor {
 
     private static void initiateFailover() {
         try {
-            Process process = Runtime.getRuntime().exec("java BackupWeatherDataCollector");
+            // Create activation flag file
+            new File(ACTIVATION_FLAG).createNewFile();
+            
+            // Start backup collector if not already running
+            ProcessBuilder pb = new ProcessBuilder("java", "BackupWeatherDataCollector");
+            pb.inheritIO(); // This will make the backup collector's output visible in the console
+            Process process = pb.start();
             System.out.println("Backup Collector activated.");
         } catch (IOException e) {
-            System.err.println("Failed to start Backup Collector: " + e.getMessage());
+            System.err.println("Failed to activate Backup Collector: " + e.getMessage());
         }
     }
 }
