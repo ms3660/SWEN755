@@ -74,15 +74,6 @@ The system consists of three primary components:
     ```
 The system will output collected weather data to the console, and the heartbeat monitor will notify you if the primary collector crashes and will automatically activate the backup.
 
-## Diagrams
- ### System Architecture Diagram:
-  ![Architecture](diagrams/Architecture.png)
-
- ### Sequence Diagram:
-  ![Sequence Diagram](diagrams/sequence.png)
-
----
-
 ## Frameworks and Libraries
 - **Java Standard Edition (Java SE)**: Core libraries for random number generation, network communication (UDP), and exception handling.
 
