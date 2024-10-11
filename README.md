@@ -1,7 +1,11 @@
 # SWEN755
-Course: SWEN.755.01 - Software Architecture (SWEN75501.2241) Instructor: Viktoria Koscinski
+**Course**: SWEN.755.01 - Software Architecture (SWEN75501.2241) **Instructor**: Viktoria Koscinski
 
-# Assignment 1: Heartbeat Implementation
+## Project Overview
+This project demonstrates a fault-tolerant **Weather Monitoring System** as part of the SWEN755 course. It highlights **fault detection** using a heartbeat mechanism and **fault recovery** via passive redundancy with checkpointing.
+
+### System Components
+The system consists of four primary components:
 
 # Weather Monitoring System
 This project is a part of the SWEN755 homework assignment. It simulates a weather monitoring system with fault detection using a heartbeat mechanism.
@@ -11,35 +15,50 @@ The system consists of three primary components:
 
 ### 1. WeatherDataCollector
 - **File:** `WeatherDataCollector.java`
-- **Functionality:** This component simulates the collection of weather data (temperature and humidity). The data is collected every second, and there is a 5% chance that a simulated sensor failure will occur, crashing the component. 
-- **Responsibilities:**
-  - Collect weather data from sensors.
-  - Send heartbeat signals using the `HeartbeatSender` to confirm that the collector is functioning properly.
-  - Simulate occasional crashes due to sensor malfunction.
+- **Functionality:** 
+  - Simulates the collection of weather data (temperature and humidity) every second.
+  - Includes a **5% chance of sensor failure**, which causes the component to crash.
+  - Implements checkpointing every 5 data points to save state for recovery.
+  - Sends heartbeat signals to confirm that the collector is functioning properly.
 
-### 2. HeartbeatSender
+### 2. BackupWeatherDataCollector
+- **File**: `BackupWeatherDataCollector.java`
+- **Functionality**:
+  - Stands by to take over data collection if the primary collector fails.
+  - Loads the latest checkpoint to continue data collection from the point the primary collector left off.
+  - Sends heartbeat signals to indicate its standby status.
+
+### 3. HeartbeatSender
 - **File:** `HeartbeatSender.java`
-- **Functionality:** The `HeartbeatSender` is responsible for sending a "heartbeat" message to the `HeartbeatMonitor` to indicate that the `WeatherDataCollector` is still operational.
-- **Responsibilities:**
-  - Send regular heartbeat messages to the monitor.
-  - Handle exceptions if there are issues with sending the heartbeat.
+- **Functionality:** 
+  - Sends "heartbeat" messages from both primary and backup collectors.
+  - Includes the source of the heartbeat (PRIMARY or BACKUP) in the message.
 
-### 3. HeartbeatMonitor
+### 4. HeartbeatMonitor
 - **File:** `HeartbeatMonitor.java`
-- **Functionality:** The `HeartbeatMonitor` listens for heartbeat signals from the `WeatherDataCollector`. If no heartbeat is received within a set timeout (5 seconds), the monitor triggers an alert that the collector may have crashed.
-- **Responsibilities:**
-  - Listen for heartbeat signals.
-  - Trigger an alert if no heartbeat is received within the specified timeout.
+- **Functionality:** 
+  - Listens for heartbeat signals from both collectors.
+  - If no heartbeat is received from the primary collector within 5 seconds, it triggers a failover and activates the backup collector.
+
+## Fault Tolerance Implementation
+- **Fault Detection**: Heartbeat mechanism.
+- **Fault Recovery**: Passive redundancy with checkpointing.
+- **Redundancy Type**: Passive (standby backup).
+- **Checkpointing**: Serialization of the weather collector state every 5 data points.
+- **Failover Process**: The backup collector is automatically activated if the primary collector fails.
+
 
 ## Design Decisions
-The failure in WeatherDataCollector is non-deterministic, with a 5% chance of occurrence on each iteration.
-Heartbeat messages are sent using UDP for simplicity and to demonstrate a lightweight protocol.
-The HeartbeatMonitor uses a 5-second timeout to detect failures.
+- **Non-deterministic failure**: The primary WeatherDataCollector has a 5% chance of failure per iteration.
+- **UDP-based heartbeat messages**: For lightweight and efficient communication.
+- **Timeout period**: A 5-second timeout is used for failure detection by the HeartbeatMonitor.
+- **Checkpointing**: Serialization-based checkpointing ensures state preservation, allowing the backup to resume from the last saved state.
+- **Distributed simulation**: Primary and backup collectors run as separate processes, simulating a distributed system.
 
 ## How to Run
 1. Compile the Java files using a Java compiler.
    ```bash
-   javac WeatherDataCollector.java HeartbeatSender.java HeartbeatMonitor.java
+   javac *.java
    ```
 2. First, run the `HeartbeatMonitor` to start listening for heartbeats:
    ```bash
@@ -49,25 +68,28 @@ The HeartbeatMonitor uses a 5-second timeout to detect failures.
    ```bash
    java WeatherDataCollector
    ```
-The system will output collected weather data to the console, and the heartbeat monitor will notify you if the collector crashes.
+4. In another terminal, start the `BackupWeatherDataCollector`:
+    ```bash
+    java BackupWeatherDataCollector
+    ```
+The system will output collected weather data to the console, and the heartbeat monitor will notify you if the primary collector crashes and will automatically activate the backup.
 
 ## Diagrams
-- **System Architecture Diagram**:
+ ### System Architecture Diagram:
   ![Architecture](diagrams/Architecture.png)
 
-- **Sequence Diagram**:
+ ### Sequence Diagram:
   ![Sequence Diagram](diagrams/sequence.png)
 
 ---
-
-This system is a basic example of monitoring and fault detection using heartbeat signals. Future enhancements could include:
-- A retry mechanism for the `WeatherDataCollector` before it crashes.
-- More detailed heartbeat messages including system status or timestamps.
 
 ## Frameworks and Libraries
 - **Java Standard Edition (Java SE)**: Core libraries for random number generation, network communication (UDP), and exception handling.
 
 ## GitHub Repository
 
-- **Repository URL**: SWEN755 on GitHub
-- **Clone via HTTPS**: https://github.com/ms3660/SWEN755.git
+- **Repository URL**: [SWEN755 on GitHub](https://github.com/ms3660/SWEN755)
+- **Clone via HTTPS**: 
+    ```bash
+    git clone https://github.com/ms3660/SWEN755.git
+    ```
