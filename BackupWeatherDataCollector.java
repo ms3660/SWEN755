@@ -50,6 +50,8 @@ public class BackupWeatherDataCollector {
     }
 
     private void loadCheckpoint() {
+        System.out.println("loadCheckpoint called");
+
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CHECKPOINT_FILE))) {
             WeatherDataCollector checkpoint = (WeatherDataCollector) in.readObject();
             System.out.println("Loaded checkpoint: " + checkpoint);
