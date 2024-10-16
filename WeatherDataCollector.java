@@ -3,6 +3,9 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Random;
+import java.io.FileInputStream;
+
+import java.io.ObjectInputStream;
 
 public class WeatherDataCollector implements Serializable {
 
@@ -10,6 +13,10 @@ public class WeatherDataCollector implements Serializable {
     private static final String CHECKPOINT_FILE = "weather_checkpoint.ser";
     private int dataPointsCollected = 0; // Tracks how many data points have been collected
     private boolean isRunning = true;
+
+    public int getDataPointsCollected() {
+        return dataPointsCollected;
+    }
 
     public void collectData() {
         System.out.println("Primary Weather Data Collector started collecting data...");
@@ -59,12 +66,13 @@ public class WeatherDataCollector implements Serializable {
         }
     }
 
-    public static WeatherDataCollector loadCheckpoint() {
-        try (java.io.ObjectInputStream in = new java.io.ObjectInputStream(new java.io.FileInputStream(CHECKPOINT_FILE))) {
-            return (WeatherDataCollector) in.readObject();
+    public void loadCheckpoint() {
+        try (FileInputStream fis = new FileInputStream(CHECKPOINT_FILE);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            dataPointsCollected = (int) ois.readObject();
+            System.out.println("Loaded checkpoint. Last checkpoint number: " + dataPointsCollected);
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading checkpoint: " + e.getMessage());
-            return new WeatherDataCollector(); // Return new instance if checkpoint loading fails
+            System.err.println("Failed to load checkpoint: " + e.getMessage());
         }
     }
 

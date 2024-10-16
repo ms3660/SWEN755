@@ -3,7 +3,7 @@ import java.net.*;
 import java.util.Random;
 import java.util.concurrent.*;
 
-public class BackupWeatherDataCollector {
+public class BackupWeatherDataCollector extends WeatherDataCollector {
     private volatile boolean isCollecting = false;
     private static final String CHECKPOINT_FILE = "weather_checkpoint.ser";
     private static final int MONITOR_PORT = 9877;
@@ -48,11 +48,13 @@ public class BackupWeatherDataCollector {
         loadCheckpoint();
         collectData();
     }
-
-    private void loadCheckpoint() {
+    
+    @Override
+    public void loadCheckpoint() {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CHECKPOINT_FILE))) {
             WeatherDataCollector checkpoint = (WeatherDataCollector) in.readObject();
-            System.out.println("Loaded checkpoint: " + checkpoint);
+            int lastDataPoint = checkpoint.getDataPointsCollected(); // Access the last checkpoint number
+            System.out.println("Loaded checkpoint. Last data point collected: " + lastDataPoint);
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error loading checkpoint: " + e.getMessage());
         }
