@@ -1,4 +1,3 @@
-package src;
 import java.util.concurrent.Callable;
 
 public class PrimeSumTask implements Callable<Long> {
