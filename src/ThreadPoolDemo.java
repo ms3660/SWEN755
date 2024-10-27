@@ -8,7 +8,7 @@ public class ThreadPoolDemo {
     public static void main(String[] args) {
         // Define range and chunk size
         int startRange = 1;
-        int endRange = 1000000;  // Increased range for a heavier task
+        int endRange = 10000000;  // Increased range for a heavier task
         int chunkSize = 5000;    // Smaller chunks to ensure thread reuse
 
         // Create a pool of 10 threads
@@ -41,6 +41,6 @@ public class ThreadPoolDemo {
         // Stop timing and print the total execution time
         long endTime = System.currentTimeMillis();
         System.out.println("Total sum of prime numbers: " + totalSum);
-        System.out.println("Time taken with 10 threads: " + (endTime - startTime) + " ms");
+        System.out.println("Time taken with 10 threads: " + (endTime - startTime)/1000 + " s");
     }
 }
