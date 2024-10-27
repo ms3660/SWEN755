@@ -19,15 +19,23 @@ public class PrimeSumTask implements Callable<Long> {
     }
 
     @Override
-    public Long call() {
+    public Long call() throws InterruptedException {
         long sum = 0;
+
+        // Simulate a time-consuming task by calculating prime numbers
         for (int i = start; i <= end; i++) {
             if (isPrime(i)) {
                 sum += i;
             }
         }
-        System.out.println("Processed range: " + start + " to " + end + ", Sum: " + sum);
+
+        // Simulate processing delay
+        Thread.sleep(100);
+
+        // Print the thread name to demonstrate reuse
+        System.out.printf("Thread %s processed range: %d to %d, Sum: %d%n",
+                Thread.currentThread().getName(), start, end, sum);
+
         return sum;
     }
 }
-
