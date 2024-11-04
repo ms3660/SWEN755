@@ -8,10 +8,10 @@ public class ThreadPoolDemo {
     public static void main(String[] args) {
         // Define range and chunk size
         int startRange = 1;
-        int endRange = 10000000;  // Increased range for a heavier task
-        int chunkSize = 5000;    // Smaller chunks to ensure thread reuse
+        int endRange = 100000000;  
+        int chunkSize = 5000; 
 
-        // Create a pool of 10 threads
+        // 10 threads
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
         // List to hold Future objects for each task
