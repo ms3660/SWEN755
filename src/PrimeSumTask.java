@@ -29,8 +29,6 @@ public class PrimeSumTask implements Callable<Long> {
             }
         }
 
-        // Simulate processing delay
-
         // Print the thread name to demonstrate reuse
         System.out.printf("Thread %s processed range: %d to %d, Sum: %d%n",
                 Thread.currentThread().getName(), start, end, sum);
