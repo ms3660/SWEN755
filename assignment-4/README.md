@@ -37,7 +37,7 @@ npm start
 Open your browser and navigate to http://localhost:3000 to use the app.
 
 ### Tech stack
-Frontend: React.js
-Backend: Node.js, Express.js
-Database: MongoDB
-Authentication: Session-based using Express-Session
+- Frontend: React.js
+- Backend: Node.js, Express.js
+- Database: MongoDB
+- Authentication: Session-based using Express-Session
