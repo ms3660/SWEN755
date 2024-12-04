@@ -1,43 +1,102 @@
-# Random Number Generator App
+### **Project Name**
 
-## Overview
-This application provides a role-based random number generation and retrieval system. It distinguishes between three user roles:
-- Unauthenticated Users: These users cannot interact with the app until they are authenticated.
-- Unauthorized Users: These users can only view the last generated random number.
-- Authorized Users (Admins): These users can generate and save random numbers in the backend, with the ability to view the latest generated number as well.
-- The backend is built using Node.js and MongoDB, while the frontend uses React.js. The app ensures seamless communication between the backend and frontend through APIs, with session management and role-based access control.
+Secure Session Management Testing
 
-## Features
-- Role-Based Access Control: User roles determine the functionality available (view-only vs. number generation).
-- Random Number Generation: Authorized users can generate and save a random number to the backend.
-- Last Generated Number Retrieval: Unauthorized users can view the last generated random number from the backend.
-- Error Handling: Displays user-friendly error messages for any backend or network issues.
+------
 
-## Prerequisites
-- Node.js: Ensure that Node.js (v16 or higher) is installed on your system.
-- MongoDB: A running instance of MongoDB is required. Use a cloud-based MongoDB service (e.g., MongoDB Atlas) or a local installation.
-- npm: Node Package Manager is required to install dependencies.
+### **Description**
 
+This project implements a secure session management system for a web application and includes test cases to verify the effectiveness of the secure session tactics. The tests focus on identifying and addressing architecture breakers, demonstrating how secure design decisions impact the application's functionality.
 
-### Running the Application
-Start Backend:
-```
-cd assignment-4\secure-session-management\backend
-npm install
-npm start
-```
+------
 
-Start Frontend:
-```
-cd assignment-4\secure-session-management\frontend
-npm install
-npm start
-```
+### **Features**
 
-Open your browser and navigate to http://localhost:3000 to use the app.
+- **Session Management**: Secure handling of user sessions.
+- **Authentication & Authorization**: User authentication and role-based access control.
+- **Testing**: Automated test cases for session fixation and session timeout scenarios.
 
-### Tech stack
-- Frontend: React.js
-- Backend: Node.js, Express.js
-- Database: MongoDB
-- Authentication: Session-based using Express-Session
+------
+
+### **Setup Instructions**
+
+1. **Install Dependencies**:
+
+   - Ensure Node.js and npm are installed.
+
+   - Run the following command to install project dependencies:
+
+     ```
+     npm install
+     ```
+
+2. **Setup Environment Variables**:
+
+   - Create a .env file in the project root with the following:
+
+     ```
+     DB_URI=mongodb://localhost:27017/secure-session-db
+     SESSION_SECRET=your_secret_key
+     COOKIE_SECRET=your_cookie_secret
+     ```
+
+3. **Run the Application**:
+
+   - Start MongoDB locally:
+
+     ```
+     mongod
+     ```
+
+   - Start the server:
+
+     ```
+     npm start
+     ```
+
+4. **Run Tests**:
+
+   - To run all tests:
+
+     ```
+     npm test
+     ```
+
+   - Alternatively, run specific test files:
+
+     ```
+     npx mocha tests/sessionFixationTest.js --timeout 5000
+     npx mocha tests/sessionTimeoutTest.js --timeout 5000
+     ```
+
+------
+
+### **Frameworks and Libraries**
+
+#### **Backend**
+
+- **Express.js**: Web framework for building REST APIs.
+- **Mongoose**: MongoDB object modeling for Node.js.
+- **Express-Session**: Middleware for session management.
+- **Cookie-Parser**: Middleware for parsing cookies.
+
+#### **Testing**
+
+- **Mocha**: Test framework.
+- **Chai**: Assertion library for writing tests.
+- **Chai-HTTP**: HTTP integration for testing REST APIs.
+
+------
+
+### **Endpoints**
+
+#### **Authentication**
+
+- `POST /api/auth/login`: Log in a user.
+- `POST /api/auth/logout`: Log out a user.
+- `GET /api/auth/user`: Fetch the logged-in user's data.
+
+#### **Random Numbers**
+
+- `POST /api/random/save`: Save a random number.
+- `GET /api/random/last`: Retrieve the last saved random number.
