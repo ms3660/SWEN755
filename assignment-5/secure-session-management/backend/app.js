@@ -7,7 +7,6 @@ const session = require('express-session');
 const authRoutes = require('./routes/authRoutes');
 const randomNumberRoutes = require('./routes/randomNumberRoutes');
 
-
 dotenv.config();
 const app = express();
 
@@ -23,16 +22,16 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-// Session configuration
+// Session configuration with proper timeout settings
 app.use(session({
     secret: process.env.SESSION_SECRET || 'app-secret-key',
     resave: true,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: false, 
+        secure: false, // Set to true in production
         sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 3000 // 3 seconds for testing purposes
     },
     name: 'sessionId'
 }));
@@ -41,6 +40,7 @@ app.use(session({
 app.use('/api/auth', authRoutes);
 app.use('/api/random', randomNumberRoutes);
 
+// MongoDB connection
 mongoose.connect(process.env.DB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
